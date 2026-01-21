@@ -2,29 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class User extends Model
+class User extends Authenticatable
 {
-    protected $table = 'tb_user';
-
+    use Notifiable;
+    use SoftDeletes;
     protected $fillable = [
-        'username',
+        'name',
+        'email',
         'password',
-        'nama',
-        'role_id',
-        'no_telp',
-        'created_at',
-        'created_by',
-        'updated_at',
-        'updated_by',
-        'deleted_at',
-        'deleted_by'
+        'role_id'
     ];
 
-    protected $hidden = [
-        'password'
-    ];
+    protected $hidden = ['password'];
+
 
     public function role()
     {

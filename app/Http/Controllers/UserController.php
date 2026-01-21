@@ -3,32 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Models\Role;
-use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+
     public function index()
     {
-        $users = User::with('role')->whereNull('deleted_at')->get();
+        $users = User::with('role')
+            ->whereNull('deleted_at')
+            ->get();
+
         return view('user.index', compact('users'));
     }
+
 
     public function create()
     {
         $roles = Role::all();
         return view('user.create', compact('roles'));
     }
+
     public function store(Request $request)
     {
+        // VALIDASI WAJIB
         $validator = Validator::make($request->all(), [
-            'username' => 'required',
-            'password' => 'required',
+            'email'    => 'required|email',
+            'password' => 'required|min:6',
             'nama'     => 'required',
-            'role_id'  => 'required',
-            'no_telp'  => 'required',
+            'role_id'  => 'required|exists:tb_role,id',
         ]);
 
         if ($validator->fails()) {
@@ -38,51 +44,72 @@ class UserController extends Controller
                 ->with('error', 'Semua field wajib diisi');
         }
 
-        $validator_uniqeValidator = Validator::make($request->all(), [
-            'username' => 'unique:tb_user,username',
+        $uniqueValidator = Validator::make($request->all(), [
+            'email' => 'unique:users,email',
         ]);
 
-        if ($validator_uniqeValidator->fails()) {
+        if ($uniqueValidator->fails()) {
             return redirect('/admin/user/create')
-                ->withErrors($validator)
+                ->withErrors($uniqueValidator)
                 ->withInput()
-                ->with('error', 'Username sudah digunakan');
+                ->with('error', 'Email sudah digunakan');
         }
 
         User::create([
-            'username' => $request->username,
-            'password' => $request->password, // sementara tanpa hash
-            'nama'     => $request->nama,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password), 
+            'name'     => $request->nama,
             'role_id'  => $request->role_id,
-            'no_telp'  => $request->no_telp,
         ]);
 
-        return redirect('/admin/user')->with('success', 'User berhasil ditambahkan');
+        return redirect('/admin/user')
+            ->with('success', 'User berhasil ditambahkan');
     }
 
-        public function edit($id)
+    public function edit($id)
     {
         $user  = User::findOrFail($id);
         $roles = Role::all();
+
         return view('user.edit', compact('user', 'roles'));
     }
 
-    // UPDATE
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
-        $user->update([
-            'username' => $request->username,
-            'nama'     => $request->nama,
-            'role_id'  => $request->role_id,
-            'no_telp'  => $request->no_telp,
+        $validator = Validator::make($request->all(), [
+            'email'   => 'required|email|unique:users,email,' . $user->id,
+            'nama'    => 'required',
+            'role_id' => 'required|exists:tb_role,id',
+            'password'=> 'nullable|min:6',
         ]);
 
-        return redirect('/admin/user');
+        if ($validator->fails()) {
+            return redirect('/admin/user/' . $id . '/edit')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $data = [
+            'email'   => $request->email,
+            'nama'    => $request->nama,
+            'role_id' => $request->role_id,
+            'no_telp' => $request->no_telp,
+        ];
+
+        // password hanya diupdate jika diisi
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $user->update($data);
+
+        return redirect('/admin/user')
+            ->with('success', 'User berhasil diperbarui');
     }
 
-    public function delete($id)
+    public function destroy($id)
     {
         $user = User::findOrFail($id);
 
@@ -90,6 +117,8 @@ class UserController extends Controller
             'deleted_at' => now()
         ]);
 
-        return redirect('/admin/user');
+        return redirect('/admin/user')
+            ->with('success', 'User berhasil dihapus');
     }
 }
+

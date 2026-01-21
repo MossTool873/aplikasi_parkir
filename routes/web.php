@@ -18,43 +18,40 @@ Route::get('/', function () {
 });
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+
 
 Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/admin/dashboard', function () {
-    if (!session('login')) {
-        return redirect('/login');
-    }
-    return 'Dashboard admin';
-});
-Route::get('/petugas/dashboard', function () {
-    if (!session('login')) {
-        return redirect('/login');
-    }
-    return 'Dashboard petugas';
-});
-Route::get('/owner/dashboard', function () {
-    if (!session('login')) {
-        return redirect('/login');
-    }
-    return 'Dashboard owner';
+Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', function () {
+        return 'Dashboard Admin';
+    })->name('admin.dashboard');
+    Route::resource('user', UserController::class);
 });
 
-use App\Http\Controllers\UserController;
-
-Route::get('/admin/user', [UserController::class, 'index']);
-Route::get('/admin/user/create', [UserController::class, 'create']);
-Route::post('/admin/user', [UserController::class, 'store']);
-Route::get('/admin/user/{id}/edit', [UserController::class, 'edit']);
-Route::post('/admin/user/{id}', [UserController::class, 'update']);
-Route::get('/admin/user/{id}/delete', [UserController::class, 'delete']);
+Route::prefix('petugas')->middleware(['auth', 'role:petugas,admin'])->group(function () {
+    Route::get('/', function () {
+        return 'Dashboard Petugas';
+    })->name('petugas.dashboard');
+});
 
 use App\Http\Controllers\AreaParkirController;
 
-Route::get('/admin/areaParkir', [AreaParkirController::class, 'index']);
-Route::get('/admin/areaParkir/create', [AreaParkirController::class, 'create']);
-Route::post('/admin/areaParkir', [AreaParkirController::class, 'store']);
-Route::get('/admin/areaParkir/{id}/edit', [AreaParkirController::class, 'edit']);
-Route::put('/admin/areaParkir/{id}', [AreaParkirController::class, 'update']);
-Route::delete('/admin/areaParkir/{id}/delete', [AreaParkirController::class, 'delete']);
+Route::prefix('admin')->group(function () {
+    Route::resource('areaParkir', AreaParkirController::class);
+});
+
+use App\Http\Controllers\TipeKendaraanController;
+
+Route::prefix('admin')->group(function () {
+    Route::resource('tipeKendaraan', TipeKendaraanController::class);
+});
+
+use App\Http\Controllers\TarifTipeKendaraanController;
+
+Route::prefix('admin')->group(function () {
+    Route::resource('tarifTipeKendaraan', TarifTipeKendaraanController::class);
+});

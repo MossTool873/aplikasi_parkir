@@ -22,7 +22,7 @@ class TipeKendaraanController extends Controller
     {
         $request->validate(['tipe_kendaraan' => 'required',]);
         TipeKendaraan::create(['tipe_kendaraan' => $request->tipe_kendaraan]);
-        return redirect('/admin/TipeKendaraan');
+        return redirect('/admin/tipeKendaraan');
     }
 
     public function edit($id)
@@ -39,7 +39,7 @@ class TipeKendaraanController extends Controller
         return redirect('/admin/tipeKendaraan');
     }
 
-    public function delete($id)
+    public function destroy($id)
     {
         $tipeKendaraan = TipeKendaraan::findOrFail($id);
         $tipeKendaraan->delete();

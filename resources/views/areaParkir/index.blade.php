@@ -36,10 +36,13 @@
             </td>
             <td>
                 <a href="/admin/areaParkir/{{ $area->id }}/edit">Edit</a>
-                <form action="/admin/areaParkir/{{ $area->id }}/delete" method="POST" style="display:inline;">
+                <form action="/admin/areaParkir/{{ $area->id }}" 
+                    method="POST"                       method="POST"
+                      style="display:inline"
+                      onsubmit="return confirm('Yakin ingin menghapus?')">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" onclick="return confirm('Yakin hapus?')">Hapus</button>
+                    <button type="submit">Hapus</button>
                 </form>
             </td>
         </tr>

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class TarifTipeKendaraan extends Model
 {
     use SoftDeletes;
+    protected $table = 'tb_tarif_tipe_kendaraan';
     protected $fillable = [
         'tipe_kendaraan_id',
         'tarif_perjam'

@@ -91,7 +91,7 @@ public function edit($id)
         return redirect('/admin/areaParkir');
     }
 
-    public function delete($id)
+    public function destroy($id)
     {
         $areaParkir = AreaParkir::findOrFail($id);
 

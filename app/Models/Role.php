@@ -8,7 +8,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Role extends Model
 {
     use SoftDeletes;
+
     protected $table = 'tb_role';
 
     protected $fillable = ['role'];
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'role_id');
+    }
 }

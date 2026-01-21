@@ -1,37 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Data User</title>
 </head>
 <body>
-    <h2>Data User</h2>
-    <a href="/admin/user/create">Tambahkan User</a>
 
-<table border="1" cellpadding="5">
-    <tr>
-        <th>Username</th>
-        <th>Nama</th>
-        <th>Role</th>
-        <th>Aksi</th>
-    </tr>
+<h2>Data User</h2>
 
-    @foreach ($users as $user)
-    <tr>
-        <td>{{ $user->username }}</td>
-        <td>{{ $user->nama }}</td>
-        <td>{{ $user->role->role }}</td>
-        <td>
-            <a href="/admin/user/{{ $user->id }}/edit">Edit</a>
-            <a href="/admin/user/{{ $user->id }}/delete"
-               onclick="return confirm('Hapus user?')">
-               Hapus
-            </a>
-        </td>
-    </tr>
-    @endforeach
+@if(session('success'))
+    <p style="color:green">{{ session('success') }}</p>
+@endif
+
+<a href="{{ route('user.create') }}">+ Tambah User</a>
+
+<table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>Email</th>
+            <th>Nama</th>
+            <th>Role</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($users as $user)
+        <tr>
+            <td>{{ $loop->iteration }}</td>
+            <td>{{ $user->email }}</td>
+            <td>{{ $user->name }}</td>
+            <td>{{ $user->role->role ?? '-' }}</td>
+            <td>
+                <a href="{{ route('user.edit', $user->id) }}">Edit</a>
+                |
+                <form action="{{ route('user.destroy', $user->id) }}"
+                      method="POST"
+                      style="display:inline">
+                    @csrf
+                    @method('DELETE')
+                    <button onclick="return confirm('Hapus user ini?')">
+                        Hapus
+                    </button>
+                </form>
+            </td>
+        </tr>
+        @endforeach
+    </tbody>
 </table>
+
 </body>
 </html>
