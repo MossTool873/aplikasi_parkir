@@ -18,10 +18,10 @@
 <form method="POST" action="/login">
     @csrf
 
-    <label>Email</label><br>
-    <input type="email"
-           name="email"
-           value="{{ old('email') }}">
+    <label>Username</label><br>
+    <input type="text"
+           name="username"
+           value="{{ old('username') }}">
     <br><br>
 
     <label>Password</label><br>

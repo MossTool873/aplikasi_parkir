@@ -18,8 +18,8 @@
 <form method="POST" action="{{ route('user.store') }}">
     @csrf
 
-    <label>Email</label><br>
-    <input type="email" name="email" value="{{ old('email') }}"><br><br>
+    <label>Username</label><br>
+    <input type="text" name="username" value="{{ old('username') }}"><br><br>
 
     <label>Password</label><br>
     <input type="password" name="password"><br><br>

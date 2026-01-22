@@ -29,9 +29,8 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        // VALIDASI WAJIB
         $validator = Validator::make($request->all(), [
-            'email'    => 'required|email',
+            'username'    => 'required',
             'password' => 'required|min:6',
             'nama'     => 'required',
             'role_id'  => 'required|exists:tb_role,id',
@@ -45,18 +44,18 @@ class UserController extends Controller
         }
 
         $uniqueValidator = Validator::make($request->all(), [
-            'email' => 'unique:users,email',
+            'username' => 'unique:users,username',
         ]);
 
         if ($uniqueValidator->fails()) {
             return redirect('/admin/user/create')
                 ->withErrors($uniqueValidator)
                 ->withInput()
-                ->with('error', 'Email sudah digunakan');
+                ->with('error', 'Username sudah digunakan');
         }
 
         User::create([
-            'email'    => $request->email,
+            'username'    => $request->username,
             'password' => Hash::make($request->password), 
             'name'     => $request->nama,
             'role_id'  => $request->role_id,
@@ -79,7 +78,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'email'   => 'required|email|unique:users,email,' . $user->id,
+            'username'   => 'required|unique:users,username,' . $user->id,
             'nama'    => 'required',
             'role_id' => 'required|exists:tb_role,id',
             'password'=> 'nullable|min:6',
@@ -92,7 +91,7 @@ class UserController extends Controller
         }
 
         $data = [
-            'email'   => $request->email,
+            'username'   => $request->username,
             'nama'    => $request->nama,
             'role_id' => $request->role_id,
             'no_telp' => $request->no_telp,

@@ -19,9 +19,9 @@
     @csrf
     @method('PUT')
 
-    <label>Email</label><br>
-    <input type="email" name="email"
-           value="{{ old('email', $user->email) }}"><br><br>
+    <label>Username</label><br>
+    <input type="text" name="username"
+           value="{{ old('username', $user->username) }}"><br><br>
 
     <label>Password (kosongkan jika tidak diubah)</label><br>
     <input type="password" name="password"><br><br>
