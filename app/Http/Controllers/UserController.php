@@ -17,14 +17,14 @@ class UserController extends Controller
             ->whereNull('deleted_at')
             ->get();
 
-        return view('user.index', compact('users'));
+        return view('admin.user.index', compact('users'));
     }
 
 
     public function create()
     {
         $roles = Role::all();
-        return view('user.create', compact('roles'));
+        return view('admin.user.create', compact('roles'));
     }
 
     public function store(Request $request)
@@ -70,7 +70,7 @@ class UserController extends Controller
         $user  = User::findOrFail($id);
         $roles = Role::all();
 
-        return view('user.edit', compact('user', 'roles'));
+        return view('admin.user.edit', compact('user', 'roles'));
     }
 
     public function update(Request $request, $id)
